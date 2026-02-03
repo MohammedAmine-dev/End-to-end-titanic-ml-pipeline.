@@ -1,0 +1,24 @@
+TITANIC DATASET DOWNLOAD INSTRUCTIONS
+======================================
+
+Option 1: Download from Kaggle (Recommended)
+---------------------------------------------
+1. Go to: https://www.kaggle.com/c/titanic/data
+2. Download these files:
+   - train.csv
+   - test.csv
+   - gender_submission.csv (sample submission format)
+3. Place them in this 'data' folder
+
+Option 2: Use Kaggle API (if you have it configured)
+----------------------------------------------------
+Run in terminal from project root:
+kaggle competitions download -c titanic -p data/
+
+Option 3: Alternative Source
+-----------------------------
+If you don't have Kaggle account:
+https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv
+
+Note: The train.csv file should have 891 rows and columns like:
+PassengerId, Survived, Pclass, Name, Sex, Age, SibSp, Parch, Ticket, Fare, Cabin, Embarked
