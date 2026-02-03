@@ -2,7 +2,7 @@
 
 A comprehensive machine learning project demonstrating the complete workflow from data exploration to model deployment. This project showcases best practices in ML engineering including modular code architecture, reproducible pipelines, and proper documentation.
 
-## 📋 Project Overview
+##  Project Overview
 
 This project builds a predictive model to determine passenger survival on the Titanic using historical data. It demonstrates a complete ML workflow with:
 -  Exploratory Data Analysis (EDA)
@@ -13,7 +13,7 @@ This project builds a predictive model to determine passenger survival on the Ti
 -  Production-ready pipeline architecture
 
 
-## 🎯 Learning Objectives
+##  Learning Objectives
 
 - Master data cleaning and preprocessing techniques
 - Implement feature engineering strategies (title extraction, family size, binning)
@@ -47,11 +47,13 @@ titanic-ml-pipeline/
 │   ├── features.py                    # Feature preparation & engineering
 │   ├── train.py                       # Model definitions & training helpers
 │   ├── evaluate.py                    # Model evaluation & best model selection
-│   └── pipeline.py                    # Main orchestrator (end-to-end workflow)
+│   ├── pipeline.py                    # Main orchestrator (end-to-end workflow)
+│   └── predict.py                     # Prediction utilities for new data
 │
 ├── results/                           # Model outputs and artifacts
-│   └── titanic_best_model.pkl                 # Serialized best model
+│   └── titanic_best_model.pkl         # Serialized best model
 │
+├── example_prediction.py              # Demo script showing model predictions
 ├── .gitignore                         # Git ignore configuration
 ├── requirements.txt                   # Project dependencies
 ├── README.md                          # This file
@@ -108,7 +110,17 @@ This will:
 - Load cleaned and engineered data
 - Train all 7 models
 - Evaluate and compare performance
-- Save the best model to `results/best_model.pkl`
+- Save the best model to `results/titanic_best_model.pkl`
+
+**Option 3: Make Predictions with the Trained Model**
+```bash
+python example_prediction.py
+```
+This will:
+- Load the saved model
+- Make predictions for sample passengers
+- Show survival probabilities
+- Demonstrate how to predict for your own inputs
 
 ##  Dataset Information
 
@@ -194,6 +206,7 @@ The `src/` directory follows a modular design:
 - **train.py**: Model definitions with tuned hyperparameters + training helpers
 - **evaluate.py**: Model evaluation and best model selection
 - **pipeline.py**: Orchestrator that ties everything together
+- **predict.py**: Prediction utilities for making survival predictions on new data
 
 This architecture ensures:
 -  Reusability across projects
@@ -202,10 +215,104 @@ This architecture ensures:
 -  Simple configuration management
 
 
+
+##  Making Predictions
+
+The project includes two prediction modules:
+
+### 1. **predict.py** (Production Module)
+```python
+from src.predict import load_model, predict_single
+
+# Load trained model
+model = load_model("results/titanic_best_model.pkl")
+
+# Define passenger using ACTUAL engineered features
+passenger = {
+    'Unnamed: 0': 0,               # Index
+    'Pclass': 1,                   # Passenger class (1-3)
+    'Sex': 0,                      # Gender (0=Female, 1=Male)
+    'HasCabin': 1,                 # Has cabin info (0/1)
+    'FamilySize': 2,               # Number of family members
+    'IsAlone': 0,                  # Traveling alone (0/1)
+    'Title_Master': 0,             # Title encoding
+    'Title_Miss': 0,
+    'Title_Mr': 0,
+    'Title_Mrs': 1,
+    'Title_Rare': 0,
+    'AgeGroup_Child': 0,           # Age group encoding
+    'AgeGroup_Teen': 0,
+    'AgeGroup_Adult': 1,
+    'AgeGroup_Senior': 0,
+    'FareGroup_Low': 0,            # Fare group encoding
+    'FareGroup_Medium': 0,
+    'FareGroup_High': 1,
+    'Embarked_C': 1,               # Embarkation port (C/Q/S)
+    'Embarked_Q': 0,
+    'Embarked_S': 0,
+}
+
+# Make prediction
+prediction = predict_single(model, passenger)
+
+
+print(f"Survived: {prediction}")       # 0 or 1
+
+```
+
+### 2. **example_prediction.py** (Demo Script)
+Interactive demonstration showing predictions for different passenger profiles:
+
+```bash
+python example_prediction.py
+```
+
+**Output includes:**
+- ✅ 1st Class Woman with Cabin → **SURVIVED** (95%+)
+- ❌ 3rd Class Man without Cabin → **DID NOT SURVIVE** (low survival chance)
+- ✅ Child with Family → **SURVIVED** (high chance - "women and children first")
+- ✅ Young Woman (3rd Class) → **SURVIVED** (female advantage)
+
+### Understanding the Features
+
+The model expects engineered features from Phase 3. Here's the mapping:
+
+| Feature | Description | Values |
+|---------|-------------|--------|
+| `Pclass` | Passenger class | 1-3 (1st/2nd/3rd) |
+| `Sex` | Gender | 0 (Female), 1 (Male) |
+| `HasCabin` | Has cabin number | 0 or 1 |
+| `FamilySize` | Count of family members | 1-11 |
+| `IsAlone` | Traveling solo | 0 or 1 |
+| `Title_*` | One-hot encoded titles | Master, Miss, Mr, Mrs, Rare |
+| `AgeGroup_*` | One-hot encoded age group | Child, Teen, Adult, Senior |
+| `FareGroup_*` | One-hot encoded fare level | Low, Medium, High |
+| `Embarked_*` | One-hot encoded port | C (Cherbourg), Q (Queenstown), S (Southampton) |
+
+### Batch Predictions
+
+To predict for multiple passengers:
+
+```python
+from src.predict import load_model, predict_batch
+import pandas as pd
+
+model = load_model("results/titanic_best_model.pkl")
+
+# Load multiple passengers
+passengers_df = pd.read_csv('data/train_engineered.csv')
+# ... drop 'Survived' column if present
+
+# Get predictions for all
+results = predict_batch(model, passengers_df)
+print(results[['Survived', 'Survival_Probability']])
+```
+
 ##  Expected Results
 
 - **Best Model:** XGBoost (typically 80-82% accuracy)
 - **Training Time:** ~2-5 seconds
+- **Prediction Speed:** ~100 predictions/second
 - **Output:** Trained model saved as pickle file
 
 ##  Key Insights
@@ -236,6 +343,5 @@ This project is open source and available under the MIT License.
 
 
 
-**Last Updated:** February 2026  
-**Status:** Complete & Production Ready ✅
+
 
