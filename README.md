@@ -2,7 +2,7 @@
 
 A comprehensive machine learning project demonstrating the complete workflow from data exploration to model deployment. This project showcases best practices in ML engineering including modular code architecture, reproducible pipelines, and proper documentation.
 
-## 📋 Project Overview
+##  Project Overview
 
 This project builds a predictive model to determine passenger survival on the Titanic using historical data. It demonstrates a complete ML workflow with:
 -  Exploratory Data Analysis (EDA)
@@ -13,7 +13,7 @@ This project builds a predictive model to determine passenger survival on the Ti
 -  Production-ready pipeline architecture
 
 
-## 🎯 Learning Objectives
+##  Learning Objectives
 
 - Master data cleaning and preprocessing techniques
 - Implement feature engineering strategies (title extraction, family size, binning)
